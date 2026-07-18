@@ -97,7 +97,7 @@ export default function Calculator() {
 
   return (
     <section id="calculator" style={{ padding: '6rem 5% 4rem', background: '#050505', color: 'white', position: 'relative' }}>
-      <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+      <div className="calculator-interactive" style={{ textAlign: 'center', marginBottom: '3rem' }}>
         <h2 className="section-title ar" style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>
           احسب <span style={{ color: '#C62828' }}>احتياجك</span>
         </h2>
@@ -109,7 +109,7 @@ export default function Calculator() {
         <p className="en" style={{ marginTop: '1rem', color: '#aaa' }}>Enter your details to calculate your BMI and the exact Macros needed to reach your goal</p>
       </div>
 
-      <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
+      <div className="calculator-interactive" style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
         
         {/* Input Form */}
         <motion.div 
@@ -265,7 +265,7 @@ export default function Calculator() {
         </motion.div>
 
         {/* Results Display */}
-        <div className="results-container" style={{ flex: '1 1 450px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="results-container print-hide" style={{ flex: '1 1 450px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <AnimatePresence>
             {showResults ? (
               <motion.div
@@ -362,6 +362,100 @@ export default function Calculator() {
         </div>
       </div>
 
+      {/* 🖨️ PRINT-ONLY FULL REPORT */}
+      {showResults && (
+        <div className="print-report-only" style={{ display: 'none' }}>
+          {/* Report Header */}
+          <div style={{ textAlign: 'center', borderBottom: '3px solid #C62828', paddingBottom: '20px', marginBottom: '30px' }}>
+            <h1 style={{ fontSize: '3rem', margin: 0, color: 'black', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '2px' }}>OXYGEN GYM</h1>
+            <h2 style={{ fontSize: '1.5rem', margin: '10px 0 0', color: '#555' }}>
+              {lang === 'ar' ? 'التقرير الشامل للتقييم البدني والغذائي' : 'Comprehensive Fitness & Nutrition Assessment Report'}
+            </h2>
+            <p style={{ marginTop: '10px', color: '#888' }}>{new Date().toLocaleDateString(lang === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', marginBottom: '30px' }}>
+            {/* Client Information */}
+            <div style={{ flex: 1, minWidth: '300px', border: '1px solid #ccc', borderRadius: '10px', padding: '20px', background: '#f9f9f9' }}>
+              <h3 style={{ fontSize: '1.3rem', color: '#C62828', borderBottom: '1px solid #ddd', paddingBottom: '10px', marginBottom: '15px' }}>
+                <i className="fas fa-user" style={{ marginRight: '8px', marginLeft: '8px' }}></i>
+                {lang === 'ar' ? 'بيانات المشترك' : 'Client Profile'}
+              </h3>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1.1rem' }}>
+                <tbody>
+                  <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'النوع:' : 'Gender:'}</td><td style={{ textAlign: 'left' }}>{lang === 'ar' ? (gender === 'male' ? 'ذكر' : 'أنثى') : (gender === 'male' ? 'Male' : 'Female')}</td></tr>
+                  <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'العمر:' : 'Age:'}</td><td style={{ textAlign: 'left' }}>{age} {lang === 'ar' ? 'سنة' : 'years'}</td></tr>
+                  <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'الطول:' : 'Height:'}</td><td style={{ textAlign: 'left' }}>{height} cm</td></tr>
+                  <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'الوزن:' : 'Weight:'}</td><td style={{ textAlign: 'left' }}>{weight} kg</td></tr>
+                  <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'النشاط:' : 'Activity Level:'}</td><td style={{ textAlign: 'left' }}>{lang === 'ar' ? activityOptions.find(o => o.value === activity)?.labelAr : activityOptions.find(o => o.value === activity)?.labelEn}</td></tr>
+                  <tr><td style={{ padding: '8px 0', fontWeight: 'bold', color: '#C62828' }}>{lang === 'ar' ? 'الهدف:' : 'Goal:'}</td><td style={{ textAlign: 'left', fontWeight: 'bold', color: '#C62828' }}>{lang === 'ar' ? (goal === 'cut' ? 'تنشيف' : goal === 'bulk' ? 'ضخامة' : 'ثبات') : (goal === 'cut' ? 'Cut' : goal === 'bulk' ? 'Bulk' : 'Maintain')}</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            {/* Assessment Results */}
+            <div style={{ flex: 1, minWidth: '300px', border: '1px solid #ccc', borderRadius: '10px', padding: '20px', background: '#f9f9f9' }}>
+              <h3 style={{ fontSize: '1.3rem', color: '#C62828', borderBottom: '1px solid #ddd', paddingBottom: '10px', marginBottom: '15px' }}>
+                <i className="fas fa-chart-pie" style={{ marginRight: '8px', marginLeft: '8px' }}></i>
+                {lang === 'ar' ? 'نتائج التقييم' : 'Assessment Results'}
+              </h3>
+              
+              <div style={{ marginBottom: '15px' }}>
+                <div style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>{lang === 'ar' ? 'مؤشر كتلة الجسم (BMI)' : 'Body Mass Index (BMI)'}</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'black' }}>{results.bmi} <span style={{ fontSize: '1.2rem', color: results.bmiColor }}>({results.bmiStatus})</span></div>
+              </div>
+
+              <div style={{ marginBottom: '15px' }}>
+                <div style={{ fontWeight: 'bold', color: '#555', marginBottom: '5px' }}>{lang === 'ar' ? 'سعرات الثبات الأساسية' : 'Maintenance Calories (TDEE)'}</div>
+                <div style={{ fontSize: '1.8rem', fontWeight: 'bold', color: 'black' }}>{results.tdee} <span style={{ fontSize: '1rem', color: '#666' }}>kcal/day</span></div>
+              </div>
+
+              <div>
+                <div style={{ fontWeight: 'bold', color: '#C62828', marginBottom: '5px' }}>{lang === 'ar' ? 'السعرات المستهدفة لتحقيق الهدف' : 'Target Calories for Goal'}</div>
+                <div style={{ fontSize: '2rem', fontWeight: 'bold', color: '#C62828' }}>{results.targetCalories} <span style={{ fontSize: '1rem', color: '#666' }}>kcal/day</span></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Nutrition Plan */}
+          <div style={{ border: '1px solid #ccc', borderRadius: '10px', padding: '20px', background: '#fff' }}>
+            <h3 style={{ fontSize: '1.5rem', color: '#C62828', borderBottom: '1px solid #ddd', paddingBottom: '10px', marginBottom: '20px', textAlign: 'center' }}>
+              <i className="fas fa-utensils" style={{ marginRight: '8px', marginLeft: '8px' }}></i>
+              {lang === 'ar' ? 'خطة التغذية والماكروز اليومية' : 'Daily Nutrition & Macros Plan'}
+            </h3>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center' }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ color: '#2196f3', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>{lang === 'ar' ? 'بروتين (Protein)' : 'Protein'}</div>
+                <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'black' }}>{results.macros.protein}<span style={{ fontSize: '1.2rem', color: '#666' }}>g</span></div>
+                <div style={{ color: '#888', marginTop: '5px' }}>{results.macros.protein * 4} kcal</div>
+              </div>
+              
+              <div style={{ width: '1px', height: '80px', background: '#ccc' }}></div>
+
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ color: '#4caf50', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>{lang === 'ar' ? 'كارب (Carbs)' : 'Carbs'}</div>
+                <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'black' }}>{results.macros.carbs}<span style={{ fontSize: '1.2rem', color: '#666' }}>g</span></div>
+                <div style={{ color: '#888', marginTop: '5px' }}>{results.macros.carbs * 4} kcal</div>
+              </div>
+
+              <div style={{ width: '1px', height: '80px', background: '#ccc' }}></div>
+
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ color: '#ff9800', fontSize: '1.2rem', fontWeight: 'bold', marginBottom: '10px' }}>{lang === 'ar' ? 'دهون صحية (Fats)' : 'Healthy Fats'}</div>
+                <div style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'black' }}>{results.macros.fats}<span style={{ fontSize: '1.2rem', color: '#666' }}>g</span></div>
+                <div style={{ color: '#888', marginTop: '5px' }}>{results.macros.fats * 9} kcal</div>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '40px', textAlign: 'center', color: '#888', fontSize: '0.9rem' }}>
+            <p>{lang === 'ar' ? 'هذا التقرير تم إنشاؤه آلياً بواسطة الموقع الرسمي لـ Oxygen Gym' : 'This report is automatically generated by the official Oxygen Gym website.'}</p>
+            <p>www.oxygengym.com | Tel: +201019183063</p>
+          </div>
+        </div>
+      )}
+
       <style>{`
         .calc-slider {
           -webkit-appearance: none;
@@ -390,63 +484,43 @@ export default function Calculator() {
         @media print {
           @page {
             size: A4 portrait;
-            margin: 20mm;
+            margin: 15mm;
           }
           body {
             background: white !important;
             margin: 0 !important;
             padding: 0 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
           }
-          /* Hide everything in the app except the calculator */
-          .app-container > :not(#calculator) {
+          /* Hide EVERYTHING in the app by default */
+          .app-container > * {
             display: none !important;
+          }
+          /* Only show the calculator wrapper */
+          .app-container > #calculator {
+            display: block !important;
           }
           
           #calculator {
-            position: relative !important;
+            position: absolute !important;
             left: 0 !important;
             top: 0 !important;
             width: 100% !important;
-            height: auto !important;
+            height: 100% !important;
             background: white !important;
             padding: 0 !important;
             color: black !important;
           }
           
-          .print-hide, .calc-inputs, nav, footer, .whatsapp-float, .mouse-scroll {
+          /* Hide the interactive parts of the calculator */
+          .calculator-interactive, .results-container, .print-hide {
             display: none !important;
           }
-          
-          /* Force layout to look good on paper */
-          #calculator > div > h2 {
-            color: black !important;
-            font-size: 2rem !important;
-            margin-bottom: 0.5rem !important;
-          }
-          #calculator > div > p {
-            color: #333 !important;
-            margin-bottom: 2rem !important;
-          }
 
-          .results-container {
+          /* Show ONLY the specially designed Print Report */
+          .print-report-only {
             display: block !important;
-            width: 100% !important;
-            page-break-inside: avoid;
-          }
-
-          .print-card {
-            background: white !important;
-            border: 2px solid #ddd !important;
-            color: black !important;
-            box-shadow: none !important;
-            padding: 1rem !important;
-            margin-bottom: 1rem !important;
-            break-inside: avoid;
-          }
-
-          .print-card span,
-          .print-card h3 {
-            color: black !important;
           }
         }
       `}</style>
