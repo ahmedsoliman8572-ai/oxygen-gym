@@ -1,14 +1,35 @@
-import MarqueeImport from 'react-fast-marquee';
-
-// Vite ESM Interop for React 19 (handles nested defaults in CommonJS modules)
-const Marquee: any = (MarqueeImport as any).default?.default || (MarqueeImport as any).default || MarqueeImport;
-
-// We don't need to duplicate the arrays manually anymore, Marquee handles it!
+// No imports needed
 const row1 = Array.from({ length: 7 }, (_, i) => `/heroes/${i + 1}.jpeg`);
 const row2 = Array.from({ length: 6 }, (_, i) => `/heroes/${i + 8}.jpeg`);
 
-export default function Heroes() {
+// Bulletproof CSS Marquee Component
+const MarqueeRow = ({ images, direction = 'left', speed = 40 }: { images: string[], direction?: 'left' | 'right', speed?: number }) => {
+  // We wrap the images in a "Set" which has paddingRight to ensure perfect mathematical looping
+  const ImageSet = () => (
+    <div style={{ display: 'flex', gap: '30px', paddingRight: '30px' }}>
+      {images.map((src, index) => (
+        <div key={`img-${index}`} className="hero-card">
+          <img src={src} alt="Gym Hero" loading="lazy" />
+          <div className="hero-glow"></div>
+        </div>
+      ))}
+    </div>
+  );
 
+  return (
+    <div className={`marquee-row ${direction}`} style={{ '--speed': `${speed}s` } as React.CSSProperties}>
+      <div className="marquee-track">
+        {/* Render 4 identical sets so it can scroll infinitely even on 4k screens */}
+        <ImageSet />
+        <ImageSet />
+        <ImageSet />
+        <ImageSet />
+      </div>
+    </div>
+  );
+};
+
+export default function Heroes() {
   return (
     <section id="heroes" style={{ padding: '6rem 0', background: '#020202', overflow: 'hidden' }}>
       <div style={{ textAlign: 'center', marginBottom: '4rem', padding: '0 5%' }}>
@@ -26,25 +47,11 @@ export default function Heroes() {
       <div className="marquee-container" style={{ position: 'relative', padding: '2rem 0' }}>
         
         {/* Row 1 - Moves Left */}
-        <Marquee speed={40} gradient={false} pauseOnHover={true} style={{ overflow: 'visible' }}>
-          {row1.map((src, index) => (
-            <div key={`r1-${index}`} className="hero-card" style={{ marginLeft: '15px', marginRight: '15px' }}>
-              <img src={src} alt="Gym Hero" loading="lazy" />
-              <div className="hero-glow"></div>
-            </div>
-          ))}
-        </Marquee>
+        <MarqueeRow images={row1} direction="left" speed={40} />
 
         {/* Row 2 - Moves Right */}
         <div style={{ marginTop: '2rem' }}>
-          <Marquee speed={45} gradient={false} pauseOnHover={true} direction="right" style={{ overflow: 'visible' }}>
-            {row2.map((src, index) => (
-              <div key={`r2-${index}`} className="hero-card" style={{ marginLeft: '15px', marginRight: '15px' }}>
-                <img src={src} alt="Gym Hero" loading="lazy" />
-                <div className="hero-glow"></div>
-              </div>
-            ))}
-          </Marquee>
+          <MarqueeRow images={row2} direction="right" speed={45} />
         </div>
 
         {/* Gradient Edges */}
@@ -52,6 +59,37 @@ export default function Heroes() {
       </div>
 
       <style>{`
+        /* Marquee Animation Logic */
+        .marquee-row {
+          width: 100%;
+          overflow: hidden;
+          position: relative;
+          display: flex;
+        }
+
+        .marquee-track {
+          display: flex;
+          width: max-content;
+          animation: scroll var(--speed) linear infinite;
+        }
+
+        /* Hover to pause */
+        .marquee-track:hover {
+          animation-play-state: paused;
+        }
+
+        /* Reverse direction for row 2 */
+        .marquee-row.right .marquee-track {
+          animation-direction: reverse;
+        }
+
+        /* Shift by exactly 25% (1 out of the 4 sets) to create a perfect seamless loop */
+        @keyframes scroll {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-25%); }
+        }
+
+        /* Design elements */
         .marquee-edges {
           position: absolute;
           inset: 0;
