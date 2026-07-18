@@ -265,7 +265,7 @@ export default function Calculator() {
         </motion.div>
 
         {/* Results Display */}
-        <div style={{ flex: '1 1 450px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div className="results-container" style={{ flex: '1 1 450px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <AnimatePresence>
             {showResults ? (
               <motion.div
@@ -277,7 +277,7 @@ export default function Calculator() {
                 {/* Top Row: BMI & Calories */}
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
                   {/* BMI Card */}
-                  <div style={{ flex: 1, background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderTop: `4px solid ${results.bmiColor}` }}>
+                  <div className="print-card" style={{ flex: 1, background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderTop: `4px solid ${results.bmiColor}` }}>
                     <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#aaa' }}>{lang === 'ar' ? 'مؤشر كتلة الجسم (BMI)' : 'Body Mass Index'}</h3>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', flexWrap: 'wrap' }}>
                       <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white' }}>{results.bmi}</span>
@@ -286,7 +286,7 @@ export default function Calculator() {
                   </div>
 
                   {/* Target Calories */}
-                  <div style={{ flex: 1, background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderTop: '4px solid white' }}>
+                  <div className="print-card" style={{ flex: 1, background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderTop: '4px solid white' }}>
                     <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#aaa' }}>{lang === 'ar' ? 'السعرات المطلوبة' : 'Target Calories'}</h3>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
                       <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white' }}>{results.targetCalories}</span>
@@ -296,7 +296,7 @@ export default function Calculator() {
                 </div>
 
                 {/* Macros Section */}
-                <div style={{ background: 'rgba(20,20,20,0.8)', padding: '2rem', borderRadius: '20px', border: '1px solid #333' }}>
+                <div className="print-card" style={{ background: 'rgba(20,20,20,0.8)', padding: '2rem', borderRadius: '20px', border: '1px solid #333' }}>
                   <h3 style={{ fontSize: '1.4rem', marginBottom: '1.5rem', color: 'white', textAlign: 'center' }}>
                     {lang === 'ar' ? 'خطة الماكروز الخاصة بك' : 'Your Custom Macros Plan'}
                   </h3>
@@ -388,41 +388,64 @@ export default function Calculator() {
 
         /* 🖨️ Print Styles */
         @media print {
-          body * {
-            visibility: hidden;
+          @page {
+            size: A4 portrait;
+            margin: 20mm;
           }
-          #calculator, #calculator * {
-            visibility: visible;
-          }
-          #calculator {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
+          body {
             background: white !important;
-            padding: 2rem !important;
-            color: black !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
-          .print-hide, .calc-inputs, nav, footer, .whatsapp-float {
+          /* Hide everything in the app except the calculator */
+          .app-container > :not(#calculator) {
             display: none !important;
           }
+          
+          #calculator {
+            position: relative !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 100% !important;
+            height: auto !important;
+            background: white !important;
+            padding: 0 !important;
+            color: black !important;
+          }
+          
+          .print-hide, .calc-inputs, nav, footer, .whatsapp-float, .mouse-scroll {
+            display: none !important;
+          }
+          
           /* Force layout to look good on paper */
           #calculator > div > h2 {
             color: black !important;
+            font-size: 2rem !important;
+            margin-bottom: 0.5rem !important;
           }
           #calculator > div > p {
             color: #333 !important;
+            margin-bottom: 2rem !important;
           }
-          /* Ensure results cards have dark borders to show up on white paper */
-          div[style*="background: rgba(20, 20, 20, 0.8)"], 
-          div[style*="background: rgba(20,20,20,0.8)"] {
+
+          .results-container {
+            display: block !important;
+            width: 100% !important;
+            page-break-inside: avoid;
+          }
+
+          .print-card {
             background: white !important;
             border: 2px solid #ddd !important;
             color: black !important;
             box-shadow: none !important;
+            padding: 1rem !important;
+            margin-bottom: 1rem !important;
+            break-inside: avoid;
           }
-          div[style*="background: rgba(20,20,20,0.8)"] span,
-          div[style*="background: rgba(20,20,20,0.8)"] h3 {
+
+          .print-card span,
+          .print-card h3 {
             color: black !important;
           }
         }
