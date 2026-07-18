@@ -1,7 +1,7 @@
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css';
+import Marquee from 'react-fast-marquee';
+// No language context needed
 
+// We don't need to duplicate the arrays manually anymore, Marquee handles it!
 const row1 = Array.from({ length: 7 }, (_, i) => `/heroes/${i + 1}.jpeg`);
 const row2 = Array.from({ length: 6 }, (_, i) => `/heroes/${i + 8}.jpeg`);
 
@@ -24,67 +24,32 @@ export default function Heroes() {
       <div className="marquee-container" style={{ position: 'relative', padding: '2rem 0' }}>
         
         {/* Row 1 - Moves Left */}
-        <Swiper
-          modules={[Autoplay]}
-          spaceBetween={15}
-          slidesPerView="auto"
-          loop={true}
-          speed={4000}
-          allowTouchMove={false}
-          autoplay={{
-            delay: 0,
-            disableOnInteraction: false,
-            reverseDirection: false,
-          }}
-          className="heroes-swiper"
-        >
-          {/* We duplicate the array multiple times to ensure the loop doesn't break on ultra-wide screens */}
-          {[...row1, ...row1, ...row1].map((src, index) => (
-            <SwiperSlide key={`r1-${index}`} style={{ width: 'auto' }}>
-              <div className="hero-card">
-                <img src={src} alt="Gym Hero" loading="lazy" />
-                <div className="hero-glow"></div>
-              </div>
-            </SwiperSlide>
+        <Marquee speed={40} gradient={false} pauseOnHover={true} style={{ overflow: 'visible' }}>
+          {row1.map((src, index) => (
+            <div key={`r1-${index}`} className="hero-card" style={{ marginLeft: '15px', marginRight: '15px' }}>
+              <img src={src} alt="Gym Hero" loading="lazy" />
+              <div className="hero-glow"></div>
+            </div>
           ))}
-        </Swiper>
+        </Marquee>
 
         {/* Row 2 - Moves Right */}
-        <Swiper
-          modules={[Autoplay]}
-          spaceBetween={15}
-          slidesPerView="auto"
-          loop={true}
-          speed={4500}
-          allowTouchMove={false}
-          autoplay={{
-            delay: 0,
-            disableOnInteraction: false,
-            reverseDirection: true,
-          }}
-          className="heroes-swiper"
-          style={{ marginTop: '1rem' }}
-        >
-          {[...row2, ...row2, ...row2].map((src, index) => (
-            <SwiperSlide key={`r2-${index}`} style={{ width: 'auto' }}>
-              <div className="hero-card">
+        <div style={{ marginTop: '2rem' }}>
+          <Marquee speed={45} gradient={false} pauseOnHover={true} direction="right" style={{ overflow: 'visible' }}>
+            {row2.map((src, index) => (
+              <div key={`r2-${index}`} className="hero-card" style={{ marginLeft: '15px', marginRight: '15px' }}>
                 <img src={src} alt="Gym Hero" loading="lazy" />
                 <div className="hero-glow"></div>
               </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+            ))}
+          </Marquee>
+        </div>
 
         {/* Gradient Edges */}
         <div className="marquee-edges"></div>
       </div>
 
       <style>{`
-        /* Crucial: Makes the Swiper transition linear instead of ease-in-out so it never stops or stutters */
-        .heroes-swiper .swiper-wrapper {
-          transition-timing-function: linear !important;
-        }
-
         .marquee-edges {
           position: absolute;
           inset: 0;
@@ -119,7 +84,6 @@ export default function Heroes() {
           pointer-events: none;
         }
 
-        /* Hover Effect: Since Swiper consumes pointer events, we apply hover to the card */
         .hero-card:hover {
           transform: scale(1.05) translateY(-10px);
           z-index: 10;
@@ -133,18 +97,10 @@ export default function Heroes() {
           border-radius: 20px;
         }
 
-        /* Pause specific swiper on hover */
-        .heroes-swiper:hover .swiper-wrapper {
-          animation-play-state: paused; /* Fallback */
-        }
-
         @media (max-width: 768px) {
           .hero-card {
             width: 220px;
             height: 280px;
-          }
-          .heroes-swiper .swiper-slide {
-            width: 220px !important;
           }
         }
       `}</style>
