@@ -9,7 +9,6 @@ import Hours from './components/Hours';
 import AboutServices from './components/AboutServices';
 import Footer from './components/Footer';
 import { LanguageProvider } from './context/LanguageContext';
-import Preloader from './components/Preloader';
 import CustomCursor from './components/CustomCursor';
 import CinematicGrain from './components/CinematicGrain';
 import { useEffect } from 'react';
@@ -48,7 +47,6 @@ function App() {
 
   return (
     <LanguageProvider>
-      <Preloader />
       <CustomCursor />
       <CinematicGrain />
       <div className="app-container" style={{ background: '#050505', color: '#fff', minHeight: '100vh', overflowX: 'hidden' }}>
