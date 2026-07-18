@@ -38,7 +38,7 @@ export default function Heroes() {
           }}
           className="heroes-swiper"
         >
-          {row1.map((src, index) => (
+          {[...row1, ...row1, ...row1, ...row1].map((src, index) => (
             <SwiperSlide key={`r1-${index}`} style={{ width: 'auto' }}>
               <div className="hero-card">
                 <img src={src} alt="Gym Hero" loading="lazy" />
@@ -64,7 +64,7 @@ export default function Heroes() {
           className="heroes-swiper"
           style={{ marginTop: '2rem' }}
         >
-          {row2.map((src, index) => (
+          {[...row2, ...row2, ...row2, ...row2].map((src, index) => (
             <SwiperSlide key={`r2-${index}`} style={{ width: 'auto' }}>
               <div className="hero-card">
                 <img src={src} alt="Gym Hero" loading="lazy" />
