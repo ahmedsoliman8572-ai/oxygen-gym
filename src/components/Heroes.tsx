@@ -1,5 +1,7 @@
-import Marquee from 'react-fast-marquee';
-// No language context needed
+import MarqueeImport from 'react-fast-marquee';
+
+// Vite ESM Interop for React 19 (handles nested defaults in CommonJS modules)
+const Marquee: any = (MarqueeImport as any).default?.default || (MarqueeImport as any).default || MarqueeImport;
 
 // We don't need to duplicate the arrays manually anymore, Marquee handles it!
 const row1 = Array.from({ length: 7 }, (_, i) => `/heroes/${i + 1}.jpeg`);
