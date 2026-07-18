@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 
 type ActivityLevel = 'sedentary' | 'light' | 'moderate' | 'active' | 'veryActive';
+type Goal = 'cut' | 'maintain' | 'bulk';
 
 export default function Calculator() {
   const { lang } = useLanguage();
@@ -11,6 +12,7 @@ export default function Calculator() {
   const [height, setHeight] = useState<number>(175);
   const [weight, setWeight] = useState<number>(75);
   const [activity, setActivity] = useState<ActivityLevel>('moderate');
+  const [goal, setGoal] = useState<Goal>('maintain');
   const [showResults, setShowResults] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -60,13 +62,34 @@ export default function Calculator() {
       bmiColor = '#f44336'; // red
     }
 
+    // Target Calories based on Goal
+    let targetCalories = tdee;
+    if (goal === 'cut') targetCalories -= 500;
+    if (goal === 'bulk') targetCalories += 500;
+
+    // Bodybuilding Macros Calculation
+    // Protein: 2.2g per kg of bodyweight
+    const protein = Math.round(weight * 2.2);
+    const proteinCals = protein * 4;
+
+    // Fats: 25% of total calories
+    const fats = Math.round((targetCalories * 0.25) / 9);
+    const fatCals = fats * 9;
+
+    // Carbs: Remaining calories
+    const carbs = Math.round((targetCalories - proteinCals - fatCals) / 4);
+
     return {
       tdee: Math.round(tdee),
       bmi: bmi.toFixed(1),
       bmiStatus: lang === 'ar' ? bmiStatusAr : bmiStatusEn,
       bmiColor,
-      bulking: Math.round(tdee + 500),
-      cutting: Math.round(tdee - 500)
+      targetCalories: Math.round(targetCalories),
+      macros: {
+        protein,
+        carbs,
+        fats
+      }
     };
   };
 
@@ -82,11 +105,11 @@ export default function Calculator() {
           Fitness <span style={{ color: '#C62828' }}>Calculator</span>
         </h2>
         <div style={{ width: '60px', height: '4px', background: 'linear-gradient(90deg, #C62828, #8B1A1A)', margin: '0 auto', borderRadius: '2px' }}></div>
-        <p className="ar" style={{ marginTop: '1rem', color: '#aaa' }}>أدخل بياناتك لتعرف مؤشر كتلة جسمك والسعرات المطلوبة لتحقيق هدفك</p>
-        <p className="en" style={{ marginTop: '1rem', color: '#aaa' }}>Enter your details to calculate your BMI and required calories to reach your goal</p>
+        <p className="ar" style={{ marginTop: '1rem', color: '#aaa' }}>أدخل بياناتك لتعرف مؤشر كتلة جسمك وجدول الماكروز (البروتين، الكارب، الدهون) المطلوب لهدفك</p>
+        <p className="en" style={{ marginTop: '1rem', color: '#aaa' }}>Enter your details to calculate your BMI and the exact Macros needed to reach your goal</p>
       </div>
 
-      <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
+      <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexWrap: 'wrap', gap: '2rem' }}>
         
         {/* Input Form */}
         <motion.div 
@@ -139,7 +162,7 @@ export default function Calculator() {
           </div>
 
           {/* Activity Level Custom Dropdown */}
-          <div style={{ marginBottom: '2rem', position: 'relative' }}>
+          <div style={{ marginBottom: '1.5rem', position: 'relative' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>{lang === 'ar' ? 'مستوى النشاط (أيام التمرين)' : 'Activity Level (Workout Days)'}</label>
             <div 
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -205,6 +228,31 @@ export default function Calculator() {
             </AnimatePresence>
           </div>
 
+          {/* Goal */}
+          <div style={{ marginBottom: '2rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>{lang === 'ar' ? 'الهدف (Goal)' : 'Your Goal'}</label>
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button 
+                onClick={() => setGoal('cut')}
+                style={{ flex: 1, padding: '10px', background: goal === 'cut' ? '#2196f3' : '#111', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', transition: '0.3s' }}
+              >
+                {lang === 'ar' ? 'تنشيف' : 'Cut'}
+              </button>
+              <button 
+                onClick={() => setGoal('maintain')}
+                style={{ flex: 1, padding: '10px', background: goal === 'maintain' ? '#4caf50' : '#111', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', transition: '0.3s' }}
+              >
+                {lang === 'ar' ? 'ثبات' : 'Maintain'}
+              </button>
+              <button 
+                onClick={() => setGoal('bulk')}
+                style={{ flex: 1, padding: '10px', background: goal === 'bulk' ? '#C62828' : '#111', color: 'white', border: 'none', borderRadius: '10px', cursor: 'pointer', transition: '0.3s' }}
+              >
+                {lang === 'ar' ? 'ضخامة' : 'Bulk'}
+              </button>
+            </div>
+          </div>
+
           <button 
             onClick={() => setShowResults(true)}
             style={{ width: '100%', padding: '15px', background: 'linear-gradient(45deg, #C62828, #ff1744)', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1.2rem', fontWeight: 'bold', cursor: 'pointer', transition: 'transform 0.3s', boxShadow: '0 10px 20px rgba(198,40,40,0.3)' }}
@@ -216,7 +264,7 @@ export default function Calculator() {
         </motion.div>
 
         {/* Results Display */}
-        <div style={{ flex: '1 1 400px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        <div style={{ flex: '1 1 450px', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <AnimatePresence>
             {showResults ? (
               <motion.div
@@ -225,38 +273,50 @@ export default function Calculator() {
                 transition={{ duration: 0.5 }}
                 style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '1rem' }}
               >
-                {/* BMI Card */}
-                <div style={{ background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderLeft: `5px solid ${results.bmiColor}` }}>
-                  <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#aaa' }}>{lang === 'ar' ? 'مؤشر كتلة الجسم (BMI)' : 'Body Mass Index (BMI)'}</h3>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem' }}>
-                    <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white' }}>{results.bmi}</span>
-                    <span style={{ fontSize: '1.2rem', color: results.bmiColor, fontWeight: 'bold' }}>{results.bmiStatus}</span>
-                  </div>
-                </div>
-
-                {/* Maintenance Calories */}
-                <div style={{ background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', border: '1px solid #333' }}>
-                  <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: '#aaa' }}>{lang === 'ar' ? 'سعرات الثبات (يوميا)' : 'Maintenance Calories (Daily)'}</h3>
-                  <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                    <span style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white' }}>{results.tdee}</span>
-                    <span style={{ color: '#888' }}>{lang === 'ar' ? 'سعر حراري' : 'kcal'}</span>
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '1rem' }}>
-                  {/* Cutting Calories */}
-                  <div style={{ flex: 1, background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderTop: '4px solid #2196f3' }}>
-                    <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#aaa' }}>{lang === 'ar' ? 'للتنشيف (Cutting)' : 'For Cutting'}</h3>
-                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>{results.cutting}</span>
+                {/* Top Row: BMI & Calories */}
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  {/* BMI Card */}
+                  <div style={{ flex: 1, background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderTop: `4px solid ${results.bmiColor}` }}>
+                    <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#aaa' }}>{lang === 'ar' ? 'مؤشر كتلة الجسم (BMI)' : 'Body Mass Index'}</h3>
+                    <div style={{ display: 'flex', alignItems: 'baseline', gap: '1rem', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white' }}>{results.bmi}</span>
+                      <span style={{ fontSize: '1.2rem', color: results.bmiColor, fontWeight: 'bold' }}>{results.bmiStatus}</span>
                     </div>
                   </div>
 
-                  {/* Bulking Calories */}
-                  <div style={{ flex: 1, background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderTop: '4px solid #C62828' }}>
-                    <h3 style={{ fontSize: '1rem', marginBottom: '0.5rem', color: '#aaa' }}>{lang === 'ar' ? 'للضخامة (Bulking)' : 'For Bulking'}</h3>
+                  {/* Target Calories */}
+                  <div style={{ flex: 1, background: 'rgba(20,20,20,0.8)', padding: '1.5rem', borderRadius: '20px', borderTop: '4px solid white' }}>
+                    <h3 style={{ fontSize: '1.1rem', marginBottom: '0.5rem', color: '#aaa' }}>{lang === 'ar' ? 'السعرات المطلوبة' : 'Target Calories'}</h3>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white' }}>{results.bulking}</span>
+                      <span style={{ fontSize: '2.5rem', fontWeight: 'bold', color: 'white' }}>{results.targetCalories}</span>
+                      <span style={{ color: '#888' }}>{lang === 'ar' ? 'سعرة' : 'kcal'}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Macros Section */}
+                <div style={{ background: 'rgba(20,20,20,0.8)', padding: '2rem', borderRadius: '20px', border: '1px solid #333' }}>
+                  <h3 style={{ fontSize: '1.4rem', marginBottom: '1.5rem', color: 'white', textAlign: 'center' }}>
+                    {lang === 'ar' ? 'خطة الماكروز الخاصة بك' : 'Your Custom Macros Plan'}
+                  </h3>
+                  
+                  <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+                    {/* Protein */}
+                    <div style={{ flex: '1 1 120px', textAlign: 'center', padding: '1.5rem', background: 'rgba(33, 150, 243, 0.1)', border: '1px solid #2196f3', borderRadius: '15px' }}>
+                      <div style={{ color: '#2196f3', fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>{lang === 'ar' ? 'بروتين' : 'Protein'}</div>
+                      <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white' }}>{results.macros.protein}<span style={{ fontSize: '1rem', color: '#888' }}>g</span></div>
+                    </div>
+
+                    {/* Carbs */}
+                    <div style={{ flex: '1 1 120px', textAlign: 'center', padding: '1.5rem', background: 'rgba(76, 175, 80, 0.1)', border: '1px solid #4caf50', borderRadius: '15px' }}>
+                      <div style={{ color: '#4caf50', fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>{lang === 'ar' ? 'كارب' : 'Carbs'}</div>
+                      <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white' }}>{results.macros.carbs}<span style={{ fontSize: '1rem', color: '#888' }}>g</span></div>
+                    </div>
+
+                    {/* Fats */}
+                    <div style={{ flex: '1 1 120px', textAlign: 'center', padding: '1.5rem', background: 'rgba(255, 152, 0, 0.1)', border: '1px solid #ff9800', borderRadius: '15px' }}>
+                      <div style={{ color: '#ff9800', fontSize: '1.2rem', marginBottom: '0.5rem', fontWeight: 'bold' }}>{lang === 'ar' ? 'دهون صحية' : 'Fats'}</div>
+                      <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'white' }}>{results.macros.fats}<span style={{ fontSize: '1rem', color: '#888' }}>g</span></div>
                     </div>
                   </div>
                 </div>
@@ -270,16 +330,16 @@ export default function Calculator() {
                   onMouseOver={(e) => { e.currentTarget.style.background = '#C62828'; e.currentTarget.style.transform = 'translateY(-5px)' }}
                   onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateY(0)' }}
                 >
-                  {lang === 'ar' ? 'شارك نتيجتك معنا لنحدد لك الاشتراك المناسب' : 'Share your result with us for a custom plan'}
+                  {lang === 'ar' ? 'أرسل لنا نتيجتك لنحدد لك أفضل نظام غذائي' : 'Send us your result to get a custom diet plan'}
                 </a>
               </motion.div>
             ) : (
               <motion.div 
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #333', borderRadius: '20px' }}
+                style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', border: '2px dashed #333', borderRadius: '20px', padding: '3rem 0' }}
               >
-                <p style={{ color: '#666', fontSize: '1.2rem' }}>
+                <p style={{ color: '#666', fontSize: '1.2rem', textAlign: 'center' }}>
                   {lang === 'ar' ? 'أدخل بياناتك لترى النتائج هنا' : 'Enter your details to see results here'}
                 </p>
               </motion.div>
