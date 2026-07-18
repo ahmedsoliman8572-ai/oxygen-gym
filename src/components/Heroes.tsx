@@ -4,26 +4,23 @@ const row2 = Array.from({ length: 6 }, (_, i) => `/heroes/${i + 8}.jpeg`);
 
 // Bulletproof CSS Marquee Component
 const MarqueeRow = ({ images, direction = 'left', speed = 40 }: { images: string[], direction?: 'left' | 'right', speed?: number }) => {
-  // We wrap the images in a "Set" which has paddingRight to ensure perfect mathematical looping
-  const ImageSet = () => (
-    <div style={{ display: 'flex', gap: '30px', paddingRight: '30px' }}>
-      {images.map((src, index) => (
-        <div key={`img-${index}`} className="hero-card">
-          <img src={src} alt="Gym Hero" loading="lazy" />
-          <div className="hero-glow"></div>
-        </div>
-      ))}
-    </div>
-  );
+  
+  // Create 4 identical sets inline to avoid React closure/re-rendering issues
+  const sets = [0, 1, 2, 3];
 
   return (
     <div className={`marquee-row ${direction}`} style={{ '--speed': `${speed}s` } as React.CSSProperties}>
       <div className="marquee-track">
-        {/* Render 4 identical sets so it can scroll infinitely even on 4k screens */}
-        <ImageSet />
-        <ImageSet />
-        <ImageSet />
-        <ImageSet />
+        {sets.map((setIndex) => (
+          <div key={`set-${setIndex}`} style={{ display: 'flex', gap: '30px', paddingRight: '30px' }}>
+            {images.map((src, imgIndex) => (
+              <div key={`img-${setIndex}-${imgIndex}`} className="hero-card">
+                <img src={src} alt="Gym Hero" loading="lazy" />
+                <div className="hero-glow"></div>
+              </div>
+            ))}
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -105,6 +102,7 @@ export default function Heroes() {
           border-radius: 20px;
           overflow: hidden;
           cursor: pointer;
+          background-color: #1a1a1a; /* Fallback color if image is missing */
           transition: all 0.5s ease;
           filter: grayscale(80%) brightness(0.6);
         }
