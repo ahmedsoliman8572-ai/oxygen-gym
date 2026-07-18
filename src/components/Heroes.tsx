@@ -1,12 +1,25 @@
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css';
-
 const row1 = Array.from({ length: 7 }, (_, i) => `/heroes/${i + 1}.jpeg`);
 const row2 = Array.from({ length: 6 }, (_, i) => `/heroes/${i + 8}.jpeg`);
 
-export default function Heroes() {
+const MarqueeRow = ({ images, direction = 'left', speed = 40 }: { images: string[], direction?: 'left' | 'right', speed?: number }) => {
+  // Duplicate array 4 times for a seamless loop across any screen size
+  const repeatedImages = [...images, ...images, ...images, ...images];
 
+  return (
+    <div className={`css-marquee ${direction}`}>
+      <div className="css-marquee-track" style={{ animationDuration: `${speed}s` }}>
+        {repeatedImages.map((src, index) => (
+          <div key={`hero-${index}`} className="hero-card">
+            <img src={src} alt="Gym Hero" loading="lazy" />
+            <div className="hero-glow"></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default function Heroes() {
   return (
     <section id="heroes" style={{ padding: '6rem 0', background: '#020202', overflow: 'hidden' }}>
       <div style={{ textAlign: 'center', marginBottom: '4rem', padding: '0 5%' }}>
@@ -24,64 +37,53 @@ export default function Heroes() {
       <div className="marquee-container" style={{ position: 'relative', padding: '2rem 0' }}>
         
         {/* Row 1 - Moves Left */}
-        <Swiper
-          modules={[Autoplay]}
-          spaceBetween={30}
-          slidesPerView="auto"
-          loop={true}
-          speed={4000}
-          allowTouchMove={false}
-          autoplay={{
-            delay: 0,
-            disableOnInteraction: false,
-            reverseDirection: false,
-          }}
-          className="heroes-swiper"
-        >
-          {[...row1, ...row1, ...row1, ...row1].map((src, index) => (
-            <SwiperSlide key={`r1-${index}`} style={{ width: 'auto' }}>
-              <div className="hero-card">
-                <img src={src} alt="Gym Hero" loading="lazy" />
-                <div className="hero-glow"></div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <MarqueeRow images={row1} direction="left" speed={30} />
 
         {/* Row 2 - Moves Right */}
-        <Swiper
-          modules={[Autoplay]}
-          spaceBetween={30}
-          slidesPerView="auto"
-          loop={true}
-          speed={4500}
-          allowTouchMove={false}
-          autoplay={{
-            delay: 0,
-            disableOnInteraction: false,
-            reverseDirection: true,
-          }}
-          className="heroes-swiper"
-          style={{ marginTop: '2rem' }}
-        >
-          {[...row2, ...row2, ...row2, ...row2].map((src, index) => (
-            <SwiperSlide key={`r2-${index}`} style={{ width: 'auto' }}>
-              <div className="hero-card">
-                <img src={src} alt="Gym Hero" loading="lazy" />
-                <div className="hero-glow"></div>
-              </div>
-            </SwiperSlide>
-          ))}
-        </Swiper>
+        <div style={{ marginTop: '2rem' }}>
+          <MarqueeRow images={row2} direction="right" speed={35} />
+        </div>
 
         {/* Gradient Edges */}
         <div className="marquee-edges"></div>
       </div>
 
       <style>{`
-        /* Crucial: Makes the Swiper transition linear instead of ease-in-out so it never stops or stutters */
-        .heroes-swiper .swiper-wrapper {
-          transition-timing-function: linear !important;
+        /* Mathematical Pure CSS Marquee */
+        .css-marquee {
+          width: 100%;
+          overflow: hidden;
+          position: relative;
+          display: flex;
+        }
+
+        .css-marquee-track {
+          display: flex;
+          gap: 30px;
+          padding-right: 30px;
+          width: max-content;
+          animation: scrollLeft linear infinite;
+        }
+
+        /* Reverse direction for Row 2 */
+        .css-marquee.right .css-marquee-track {
+          animation-name: scrollRight;
+        }
+
+        /* Hover to pause */
+        .css-marquee-track:hover {
+          animation-play-state: paused;
+        }
+
+        /* Shift exactly 25% (since we cloned 4 times) for a seamless loop */
+        @keyframes scrollLeft {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-25%); }
+        }
+
+        @keyframes scrollRight {
+          0% { transform: translateX(-25%); }
+          100% { transform: translateX(0); }
         }
 
         .marquee-edges {
@@ -99,6 +101,7 @@ export default function Heroes() {
           border-radius: 20px;
           overflow: hidden;
           cursor: pointer;
+          background-color: #1a1a1a;
           transition: all 0.5s ease;
           filter: grayscale(80%) brightness(0.6);
         }
@@ -118,7 +121,6 @@ export default function Heroes() {
           pointer-events: none;
         }
 
-        /* Hover Effect: Since Swiper consumes pointer events, we apply hover to the card */
         .hero-card:hover {
           transform: scale(1.05) translateY(-10px);
           z-index: 10;
@@ -132,18 +134,10 @@ export default function Heroes() {
           border-radius: 20px;
         }
 
-        /* Pause specific swiper on hover */
-        .heroes-swiper:hover .swiper-wrapper {
-          animation-play-state: paused; /* Fallback */
-        }
-
         @media (max-width: 768px) {
           .hero-card {
             width: 220px;
             height: 280px;
-          }
-          .heroes-swiper .swiper-slide {
-            width: 220px !important;
           }
         }
       `}</style>
