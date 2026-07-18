@@ -7,6 +7,7 @@ type Goal = 'cut' | 'maintain' | 'bulk';
 
 export default function Calculator() {
   const { lang } = useLanguage();
+  const [name, setName] = useState<string>('');
   const [gender, setGender] = useState<'male' | 'female'>('male');
   const [age, setAge] = useState<number>(25);
   const [height, setHeight] = useState<number>(175);
@@ -119,6 +120,20 @@ export default function Calculator() {
           className="calc-inputs print-hide"
           style={{ flex: '1 1 400px', background: 'rgba(20,20,20,0.8)', padding: '2rem', borderRadius: '20px', border: '1px solid rgba(198,40,40,0.2)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)' }}
         >
+          {/* Trainee Name */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.5rem', color: '#ccc' }}>{lang === 'ar' ? 'اسم المتدرب (اختياري)' : 'Trainee Name (Optional)'}</label>
+            <input 
+              type="text" 
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={lang === 'ar' ? 'أدخل اسمك هنا' : 'Enter your name here'}
+              style={{ width: '100%', padding: '12px 15px', background: '#111', color: 'white', border: '1px solid #333', borderRadius: '10px', outline: 'none' }}
+              onFocus={(e) => e.target.style.borderColor = '#C62828'}
+              onBlur={(e) => e.target.style.borderColor = '#333'}
+            />
+          </div>
+
           {/* Gender */}
           <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem' }}>
             <button 
@@ -383,6 +398,7 @@ export default function Calculator() {
               </h3>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '1.1rem' }}>
                 <tbody>
+                  {name && <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'الاسم:' : 'Name:'}</td><td style={{ textAlign: 'left', fontWeight: 'bold' }}>{name}</td></tr>}
                   <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'النوع:' : 'Gender:'}</td><td style={{ textAlign: 'left' }}>{lang === 'ar' ? (gender === 'male' ? 'ذكر' : 'أنثى') : (gender === 'male' ? 'Male' : 'Female')}</td></tr>
                   <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'العمر:' : 'Age:'}</td><td style={{ textAlign: 'left' }}>{age} {lang === 'ar' ? 'سنة' : 'years'}</td></tr>
                   <tr><td style={{ padding: '8px 0', fontWeight: 'bold' }}>{lang === 'ar' ? 'الطول:' : 'Height:'}</td><td style={{ textAlign: 'left' }}>{height} cm</td></tr>
