@@ -1,4 +1,3 @@
-import Tilt from 'react-parallax-tilt';
 import { motion } from 'framer-motion';
 
 const teamMembers = [
@@ -15,6 +14,7 @@ const teamMembers = [
     nameAr: 'كابتن احمد سمري',
     nameEn: 'Capt. Ahmed Samry',
     roleAr: 'مدرب',
+    roleEn: 'Coach',
     img: '/team/coach_nobg.png'
   }
 ];
@@ -40,74 +40,123 @@ export default function Team() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.6, delay: idx * 0.2 }}
+            className="team-card"
           >
-            <Tilt
-              className="parallax-effect-glare-scale"
-              perspective={500}
-              glareEnable={true}
-              glareMaxOpacity={0.45}
-              scale={1.05}
-              gyroscope={true}
-              style={{
-                background: 'rgba(30, 30, 30, 0.6)',
-                backdropFilter: 'blur(10px)',
-                borderRadius: '20px',
-                border: '1px solid rgba(255,255,255,0.05)',
-                width: '320px',
-                overflow: 'hidden',
-                transformStyle: 'preserve-3d',
-                cursor: 'pointer',
-                boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-              }}
-            >
-              <div 
-                style={{ 
-                  height: '350px', 
-                  position: 'relative', 
-                  display: 'flex', 
-                  justifyContent: 'center', 
-                  alignItems: 'flex-end',
-                  transform: 'translateZ(60px)' // Pops the image out in 3D space
-                }}
-              >
-                {/* Glowing orb */}
-                <div style={{
-                  position: 'absolute',
-                  width: '250px', height: '250px',
-                  background: 'radial-gradient(circle, rgba(198,40,40,0.3) 0%, rgba(0,0,0,0) 70%)',
-                  top: '50%', left: '50%',
-                  transform: 'translate(-50%, -50%)',
-                  borderRadius: '50%',
-                  animation: 'pulseGlow 3s infinite'
-                }}></div>
-                
-                <img 
-                  src={member.img} 
-                  alt={member.nameEn} 
-                  style={{ height: '110%', objectFit: 'contain', position: 'relative', zIndex: 1, filter: 'drop-shadow(0 15px 20px rgba(0,0,0,0.8))' }}
-                />
-              </div>
+            <div className="team-image-container">
+              {/* Glowing orb background */}
+              <div className="team-glow-orb"></div>
+              <img 
+                src={member.img} 
+                alt={member.nameEn} 
+                className="team-image"
+              />
+            </div>
 
-              <div style={{ padding: '1.5rem', textAlign: 'center', transform: 'translateZ(30px)' }}>
-                <div className="ar" style={{ color: '#C62828', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase' }}>{member.roleAr}</div>
-                <div className="en" style={{ color: '#C62828', fontSize: '0.9rem', fontWeight: 600, marginBottom: '0.5rem', textTransform: 'uppercase' }}>{member.roleEn}</div>
-                
-                <h3 className="ar" style={{ color: 'white', margin: '0 0 0.5rem' }}>{member.nameAr}</h3>
-                <h3 className="en" style={{ color: 'white', margin: '0 0 0.5rem' }}>{member.nameEn}</h3>
-                
-                {member.subAr && <p className="ar" style={{ color: '#888', fontSize: '0.9rem', margin: 0, fontStyle: 'italic' }}>{member.subAr}</p>}
-                {member.subEn && <p className="en" style={{ color: '#888', fontSize: '0.9rem', margin: 0, fontStyle: 'italic' }}>{member.subEn}</p>}
-              </div>
-            </Tilt>
+            <div className="team-info">
+              <div className="ar team-role">{member.roleAr}</div>
+              <div className="en team-role">{member.roleEn}</div>
+              
+              <h3 className="ar team-name">{member.nameAr}</h3>
+              <h3 className="en team-name">{member.nameEn}</h3>
+              
+              {member.subAr && <p className="ar team-sub">{member.subAr}</p>}
+              {member.subEn && <p className="en team-sub">{member.subEn}</p>}
+            </div>
           </motion.div>
         ))}
       </div>
       
       <style>{`
+        .team-card {
+          background: rgba(30, 30, 30, 0.6);
+          backdrop-filter: blur(10px);
+          border-radius: 20px;
+          border: 1px solid rgba(255,255,255,0.05);
+          width: 320px;
+          overflow: hidden;
+          cursor: pointer;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+          transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .team-card:hover {
+          transform: translateY(-10px);
+          box-shadow: 0 20px 40px rgba(198, 40, 40, 0.2);
+          border: 1px solid rgba(198, 40, 40, 0.3);
+        }
+
+        .team-image-container {
+          height: 350px;
+          position: relative;
+          display: flex;
+          justifyContent: center;
+          alignItems: flex-end;
+          background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
+        }
+
+        .team-glow-orb {
+          position: absolute;
+          width: 250px; 
+          height: 250px;
+          background: radial-gradient(circle, rgba(198,40,40,0.3) 0%, rgba(0,0,0,0) 70%);
+          top: 50%; left: 50%;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+          animation: pulseGlow 3s infinite;
+        }
+
+        .team-image {
+          height: 105%;
+          object-fit: contain;
+          position: relative;
+          z-index: 1;
+          filter: drop-shadow(0 10px 15px rgba(0,0,0,0.8));
+          transition: transform 0.4s ease;
+        }
+
+        .team-card:hover .team-image {
+          transform: scale(1.05);
+        }
+
+        .team-info {
+          padding: 1.5rem;
+          text-align: center;
+          background: linear-gradient(to top, rgba(15,15,15,1), transparent);
+        }
+
+        .team-role {
+          color: #C62828;
+          font-size: 0.9rem;
+          font-weight: 600;
+          margin-bottom: 0.5rem;
+          text-transform: uppercase;
+        }
+
+        .team-name {
+          color: white;
+          margin: 0 0 0.5rem;
+        }
+
+        .team-sub {
+          color: #888;
+          font-size: 0.9rem;
+          margin: 0;
+          font-style: italic;
+        }
+
         @keyframes pulseGlow {
-          0% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0.4); }
-          70% { box-shadow: 0 0 0 20px rgba(198, 40, 40, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(198, 40, 40, 0); }
+          0% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
+          100% { opacity: 0.5; transform: translate(-50%, -50%) scale(0.9); }
+        }
+
+        @media (max-width: 768px) {
+          .team-card {
+            width: 280px;
+          }
+          .team-image-container {
+            height: 300px;
+          }
         }
       `}</style>
     </section>
