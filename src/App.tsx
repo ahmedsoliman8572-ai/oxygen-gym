@@ -7,6 +7,7 @@ import Heroes from './components/Heroes';
 import Pricing from './components/Pricing';
 import Hours from './components/Hours';
 import AboutServices from './components/AboutServices';
+import MuscleGuide from './components/MuscleGuide';
 import Footer from './components/Footer';
 import { LanguageProvider } from './context/LanguageContext';
 import CustomCursor from './components/CustomCursor';
@@ -53,6 +54,7 @@ function App() {
         <Navbar />
         <Hero />
         <AboutServices />
+        <MuscleGuide />
         <Gallery />
         <Calculator />
         <Team />
