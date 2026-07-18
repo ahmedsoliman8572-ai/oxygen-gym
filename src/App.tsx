@@ -2,6 +2,7 @@ import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Gallery from './components/Gallery';
 import Calculator from './components/Calculator';
+import DailyTip from './components/DailyTip';
 import Team from './components/Team';
 import Heroes from './components/Heroes';
 import Pricing from './components/Pricing';
@@ -57,6 +58,7 @@ function App() {
         <MuscleGuide />
         <Gallery />
         <Calculator />
+        <DailyTip />
         <Team />
         <Heroes />
         <Pricing />
