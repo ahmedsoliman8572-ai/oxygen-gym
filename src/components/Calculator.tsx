@@ -116,6 +116,7 @@ export default function Calculator() {
           initial={{ opacity: 0, x: -50 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
+          className="calc-inputs print-hide"
           style={{ flex: '1 1 400px', background: 'rgba(20,20,20,0.8)', padding: '2rem', borderRadius: '20px', border: '1px solid rgba(198,40,40,0.2)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)', backdropFilter: 'blur(10px)' }}
         >
           {/* Gender */}
@@ -321,17 +322,30 @@ export default function Calculator() {
                   </div>
                 </div>
 
-                {/* Call To Action */}
-                <a 
-                  href="https://wa.me/201019183063" 
-                  target="_blank" 
-                  rel="noreferrer"
-                  style={{ display: 'block', textAlign: 'center', marginTop: '1rem', padding: '15px', background: 'transparent', color: 'white', border: '2px solid #C62828', borderRadius: '10px', fontSize: '1.1rem', textDecoration: 'none', transition: 'all 0.3s' }}
-                  onMouseOver={(e) => { e.currentTarget.style.background = '#C62828'; e.currentTarget.style.transform = 'translateY(-5px)' }}
-                  onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateY(0)' }}
-                >
-                  {lang === 'ar' ? 'أرسل لنا نتيجتك لنحدد لك أفضل نظام غذائي' : 'Send us your result to get a custom diet plan'}
-                </a>
+                {/* Call To Action & Print */}
+                <div className="print-hide" style={{ display: 'flex', gap: '1rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+                  <a 
+                    href="https://wa.me/201019183063" 
+                    target="_blank" 
+                    rel="noreferrer"
+                    style={{ flex: '2 1 200px', display: 'block', textAlign: 'center', padding: '15px', background: 'transparent', color: 'white', border: '2px solid #C62828', borderRadius: '10px', fontSize: '1.1rem', textDecoration: 'none', transition: 'all 0.3s' }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#C62828'; e.currentTarget.style.transform = 'translateY(-5px)' }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.transform = 'translateY(0)' }}
+                  >
+                    <i className="fab fa-whatsapp" style={{ marginRight: '8px', marginLeft: '8px' }}></i>
+                    {lang === 'ar' ? 'أرسل لنا نتيجتك' : 'Send your result'}
+                  </a>
+                  
+                  <button 
+                    onClick={() => window.print()}
+                    style={{ flex: '1 1 150px', padding: '15px', background: '#333', color: 'white', border: 'none', borderRadius: '10px', fontSize: '1.1rem', cursor: 'pointer', transition: 'all 0.3s', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+                    onMouseOver={(e) => { e.currentTarget.style.background = '#444'; e.currentTarget.style.transform = 'translateY(-5px)' }}
+                    onMouseOut={(e) => { e.currentTarget.style.background = '#333'; e.currentTarget.style.transform = 'translateY(0)' }}
+                  >
+                    <i className="fas fa-print"></i>
+                    {lang === 'ar' ? 'طباعة التقرير' : 'Print Report'}
+                  </button>
+                </div>
               </motion.div>
             ) : (
               <motion.div 
@@ -370,6 +384,47 @@ export default function Calculator() {
         .calc-slider::-webkit-slider-thumb:hover {
           transform: scale(1.2);
           box-shadow: 0 0 15px #C62828;
+        }
+
+        /* 🖨️ Print Styles */
+        @media print {
+          body * {
+            visibility: hidden;
+          }
+          #calculator, #calculator * {
+            visibility: visible;
+          }
+          #calculator {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            background: white !important;
+            padding: 2rem !important;
+            color: black !important;
+          }
+          .print-hide, .calc-inputs, nav, footer, .whatsapp-float {
+            display: none !important;
+          }
+          /* Force layout to look good on paper */
+          #calculator > div > h2 {
+            color: black !important;
+          }
+          #calculator > div > p {
+            color: #333 !important;
+          }
+          /* Ensure results cards have dark borders to show up on white paper */
+          div[style*="background: rgba(20, 20, 20, 0.8)"], 
+          div[style*="background: rgba(20,20,20,0.8)"] {
+            background: white !important;
+            border: 2px solid #ddd !important;
+            color: black !important;
+            box-shadow: none !important;
+          }
+          div[style*="background: rgba(20,20,20,0.8)"] span,
+          div[style*="background: rgba(20,20,20,0.8)"] h3 {
+            color: black !important;
+          }
         }
       `}</style>
     </section>
