@@ -89,8 +89,8 @@ export default function Team() {
           height: 350px;
           position: relative;
           display: flex;
-          justifyContent: center;
-          alignItems: flex-end;
+          justify-content: center;
+          align-items: flex-end;
           background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.4));
         }
 
@@ -106,8 +106,10 @@ export default function Team() {
         }
 
         .team-image {
-          height: 105%;
+          height: 95%; /* Leaves a small gap at the top so the head isn't cut off */
+          width: 100%;
           object-fit: contain;
+          object-position: bottom; /* Forces the image to align perfectly to the bottom of the container */
           position: relative;
           z-index: 1;
           filter: drop-shadow(0 10px 15px rgba(0,0,0,0.8));
@@ -115,13 +117,16 @@ export default function Team() {
         }
 
         .team-card:hover .team-image {
-          transform: scale(1.05);
+          transform: scale(1.05) translateY(-5px); /* Moves up slightly on hover to give a 3D pop effect */
         }
 
         .team-info {
           padding: 1.5rem;
           text-align: center;
-          background: linear-gradient(to top, rgba(15,15,15,1), transparent);
+          background: #151515; /* Solid dark background to ensure text is fully readable */
+          position: relative;
+          z-index: 2; /* Ensures text is always on top of anything else */
+          border-top: 1px solid rgba(198, 40, 40, 0.2); /* Nice separator */
         }
 
         .team-role {
